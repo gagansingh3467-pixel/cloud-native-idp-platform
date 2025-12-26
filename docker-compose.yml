@@ -1,0 +1,81 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: nginx:alpine
+    container_name: idp-gateway
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: idp-backend
+    expose:
+      - "8000"
+    depends_on:
+      - db
+      - redis
+      - opensearch
+    environment:
+      DATABASE_URL: postgresql://idp:idp@db:5432/idp
+      REDIS_URL: redis://redis:6379
+      LOG_STORE_URL: http://opensearch:9200
+
+  worker:
+    build: ./backend
+    container_name: idp-worker
+    command: python -c "from app.modules.cicd.worker import run_worker; run_worker()"
+    depends_on:
+      - db
+      - redis
+      - opensearch
+    environment:
+      DATABASE_URL: postgresql://idp:idp@db:5432/idp
+      REDIS_URL: redis://redis:6379
+      LOG_STORE_URL: http://opensearch:9200
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/gagan/idp-demo-service:/workspace/idp-demo-service
+
+  db:
+    image: postgres:15
+    container_name: idp-db
+    environment:
+      POSTGRES_USER: idp
+      POSTGRES_PASSWORD: idp
+      POSTGRES_DB: idp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: idp-redis
+
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: idp-opensearch
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: idp-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_INSTALL_OLUGINS=grafana-opensearch-datasource
+    depends_on:
+      - opensearch
+
+volumes:
+  postgres_data:
+  opensearch_data:
