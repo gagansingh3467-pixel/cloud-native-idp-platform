@@ -4,6 +4,9 @@ A self-hosted Internal Developer Platform that provides a GitHub Actions–like 
 
 This project focuses on **platform engineering concepts** such as reliability, security, and observability rather than user-facing application features.
 
+## 🏗 Architecture Diagram
+
+![IDP Architecture](docs/architecture.png)
 ---
 
 ## 🚀 What This Platform Does
@@ -126,3 +129,4 @@ This project demonstrates **how such a platform can be built from scratch**, foc
 This is a **platform engineering project**, not a user-facing application.
 
    
+
