@@ -6,7 +6,7 @@ This project focuses on **platform engineering concepts** such as reliability, s
 
 ## 🏗 Architecture Diagram
 
-![IDP Architecture](docs/architecture.png)
+![IDP Architecture](architecture.png)
 ---
 
 ## 🚀 What This Platform Does
@@ -129,4 +129,5 @@ This project demonstrates **how such a platform can be built from scratch**, foc
 This is a **platform engineering project**, not a user-facing application.
 
    
+
 
